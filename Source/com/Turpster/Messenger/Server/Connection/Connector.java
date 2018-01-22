@@ -1,6 +1,7 @@
 package com.Turpster.Messenger.Server.Connection;
 
 import com.Turpster.Messenger.Server.Server;
+import com.Turpster.Messenger.net.MessagePacket;
 import com.Turpster.Messenger.net.Packet;
 
 import java.io.IOException;
@@ -89,6 +90,11 @@ public class Connector implements Runnable
             e.printStackTrace();
         }
 
+    }
+
+    public void sendUserMessage(String message)
+    {
+        this.sendPacket(new MessagePacket(message));
     }
 
     private void setupSockets() throws IOException

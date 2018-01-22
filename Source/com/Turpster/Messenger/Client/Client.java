@@ -16,7 +16,8 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.logging.Level;
 
-public class Client extends JFrame {
+public class Client extends JFrame
+{
     String userName;
 
     String serverAddress;
