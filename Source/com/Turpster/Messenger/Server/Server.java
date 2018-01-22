@@ -1,6 +1,8 @@
 package com.Turpster.Messenger.Server;
 
 import com.Turpster.Messenger.Logger;
+import com.Turpster.Messenger.Server.Commands.CommandExecutor;
+import com.Turpster.Messenger.Server.Commands.CommandHandler;
 import com.Turpster.Messenger.Server.Connection.ConnectionHandler;
 import com.Turpster.Messenger.Server.Connection.Connector;
 import com.Turpster.Messenger.net.MessagePacket;
@@ -18,6 +20,7 @@ public class Server extends JFrame
     private static Logger logger;
 
     ConnectionHandler connectionHandler;
+    CommandHandler commandHandler;
 
     JTextArea text;
 
@@ -27,6 +30,8 @@ public class Server extends JFrame
 
         text = new JTextArea("Setting up...");
         text.setEditable(false);
+
+        commandHandler = new CommandHandler();
 
         super.setSize(new Dimension(700, 500));
         super.setLocationRelativeTo(null);
@@ -57,6 +62,9 @@ public class Server extends JFrame
         this.getLogger().log(Level.FINE, message);
     }
 
+    public CommandHandler getCommandHandler() {
+        return commandHandler;
+    }
 
     public String getPublicAddress()
     {

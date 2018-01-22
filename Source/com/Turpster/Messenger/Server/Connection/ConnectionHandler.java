@@ -76,24 +76,45 @@ public class ConnectionHandler implements Runnable
         {
             MessagePacket messagePacket = (MessagePacket) packet;
 
-            if (connector.canSend)
+            if (!messagePacket.getMessage().startsWith("/"))
             {
-                if (Server.serverOperatorId == connector.ID)
+                if (connector.canSend)
                 {
-                    server.sendMessage("[Operator] " + connector.getName() + ": " + messagePacket.getMessage());
+                    if (Server.serverOperatorId == connector.ID)
+                    {
+                        server.sendMessage("[Operator] " + connector.getName() + ": " + messagePacket.getMessage());
+                    } else server.sendMessage("" + connector.getName() + ": " + messagePacket.getMessage());
                 }
-                else server.sendMessage("" + connector.getName() + ": " + messagePacket.getMessage());
+                else
+                    {
+                    connector.sendPacket(new MessagePacket("Invalid User, you can't send this message."));
+                }
             }
             else
             {
-                connector.sendPacket(new MessagePacket("Invalid User, you can't send this message."));
+                String messageWithoutSlash =  messagePacket.getMessage().replaceFirst("/", "");
+                String[] actualArgs = messageWithoutSlash.split(" ");
+                String command = actualArgs[0];
+
+                String args[];
+
+                args = new String[actualArgs.length - 1];
+
+                for (int x = 1; x < actualArgs.length; x++)
+                {
+                    args[x - 1] = actualArgs[x];
+                }
+
+                this.server.getCommandHandler().executeCommand(connector, command, args);
             }
         }
+
         else if (packet instanceof ChangeUsernamePacket)
         {
             ChangeUsernamePacket changeUsername = (ChangeUsernamePacket) packet;
             connector.name = changeUsername.getUsername();
         }
+
         else if (packet instanceof LoginPacket)
         {
             LoginPacket loginPacket = (LoginPacket) packet;

@@ -105,6 +105,15 @@ public class Connector implements Runnable
         output.flush();
     }
 
+    public boolean isOperator()
+    {
+        if (this.ID == Server.serverOperatorId)
+        {
+            return true;
+        }
+        else return false;
+    }
+
     public synchronized void stop()
     {
         this.connectionHandler.connections.remove(this);
