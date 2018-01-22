@@ -31,6 +31,7 @@ public class Server extends JFrame
         super.setSize(new Dimension(700, 500));
         super.setLocationRelativeTo(null);
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        text.setFont(new Font("Consolas", Font.PLAIN, 13));
         super.add(new JScrollPane(text, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         super.setVisible(true);
 

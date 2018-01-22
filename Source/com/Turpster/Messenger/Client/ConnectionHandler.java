@@ -1,5 +1,6 @@
 package com.Turpster.Messenger.Client;
 
+import com.Turpster.Messenger.Server.Server;
 import com.Turpster.Messenger.net.MessagePacket;
 import com.Turpster.Messenger.net.Packet;
 
@@ -8,13 +9,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 
 public class ConnectionHandler implements Runnable
 {
     private Thread thread;
 
-    public ConnectionHandler connectionHandler;
 
     private Socket connection;
     String ipAddress;
@@ -34,9 +36,10 @@ public class ConnectionHandler implements Runnable
         {
             connection = new Socket(ipAddress, port);
             client.recieveMessage("Connected!");
+            this.client.setSendable(true);
             setupStreams();
         }
-        catch (ConnectException e)
+        catch (UnknownHostException | ConnectException e)
         {
             client.recieveMessage("Failed to connect to: " + ipAddress + ".");
         }
@@ -49,8 +52,16 @@ public class ConnectionHandler implements Runnable
 
     public void sendPacket(Packet packet) throws IOException
     {
-        output.writeObject(packet);
-        output.flush();
+        if (connection != null) {
+
+            output.writeObject(packet);
+            output.flush();
+        }
+        else
+        {
+            Client.getLogger().log(Level.SEVERE, "Could not connect to " + this.getIpAddress() + ". Exiting the program.");
+            client.stop();
+        }
     }
 
     @Override
@@ -58,25 +69,32 @@ public class ConnectionHandler implements Runnable
     {
         while (true)
         {
-            if (!connection.isClosed())
-            {
-                try
-                {
-                    Object obj = input.readObject();
+            if (connection != null) {
+                if (!connection.isClosed()) {
+                    try {
+                        Object obj = input.readObject();
 
-                    Packet packet = (Packet) obj;
+                        Packet packet = (Packet) obj;
 
-                    this.recievedPacket(packet);
-                } catch (ClassCastException e) {
-                    Client.getLogger().log(Level.FINE, "Server did not send a Packet");
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    Client.getLogger().log(Level.WARNING, "Server sent unknown object. (Are we updated to the latest version?) :P");
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    Client.getLogger().log(Level.SEVERE, "There has been an error recieving data from the connection.");
-                    e.printStackTrace();
+                        this.recievedPacket(packet);
+                    } catch (SocketException e) {
+                        Client.getLogger().log(Level.FINE, "Disconnecting...");
+                        this.stop();
+                    } catch (ClassCastException e) {
+                        Client.getLogger().log(Level.FINE, "Server did not send a Packet");
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        Client.getLogger().log(Level.WARNING, "Server sent unknown object. (Are we updated to the latest version?) :P");
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        Client.getLogger().log(Level.SEVERE, "There has been an error recieving data from the connection.");
+                        e.printStackTrace();
+                    }
                 }
+            }
+            else
+            {
+                stop();
             }
         }
     }

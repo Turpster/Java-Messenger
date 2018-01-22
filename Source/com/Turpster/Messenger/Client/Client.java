@@ -16,8 +16,7 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.logging.Level;
 
-public class Client extends JFrame
-{
+public class Client extends JFrame {
     String userName;
 
     String serverAddress;
@@ -27,8 +26,8 @@ public class Client extends JFrame
     JTextArea text;
 
     JPanel bottom;
-        JTextField typeBox;
-        JButton changeUsername;
+    JTextField typeBox;
+    JButton changeUsername;
 
     private static Logger logger;
 
@@ -36,29 +35,22 @@ public class Client extends JFrame
 
     private ConnectionHandler connectionHandler;
 
-    public Client(String serverAddress, String userName, int id)
-    {
+    public Client(String serverAddress, String userName, int id) {
         super("Turpster Messenger");
 
         this.id = id;
 
         logger = new Logger();
 
-        if (userName == null || userName.equals("null"))
-        {
+        if (userName == null || userName.equals("null")) {
             this.userName = JOptionPane.showInputDialog("Enter Username");
-        }
-        else
-        {
+        } else {
             this.userName = userName;
         }
 
-        if (serverAddress == null || serverAddress.equals("null"))
-        {
+        if (serverAddress == null || serverAddress.equals("null")) {
             this.serverAddress = JOptionPane.showInputDialog("Enter Target Server Address");
-        }
-        else
-        {
+        } else {
             this.serverAddress = serverAddress;
         }
 
@@ -74,26 +66,23 @@ public class Client extends JFrame
         changeUsername = new JButton("Change Username");
         typeBox = new JTextField();
         typeBox.setPreferredSize(new Dimension(super.getSize().width - 170, 25));
+        typeBox.setEditable(false);
 
         typeBox.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent e)
-            {
+            public void keyTyped(KeyEvent e) {
             }
 
             @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER)
-                {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     sendMessage(typeBox.getText());
                     typeBox.setText("");
                 }
             }
 
             @Override
-            public void keyReleased(KeyEvent e)
-            {
+            public void keyReleased(KeyEvent e) {
 
             }
         });
@@ -102,11 +91,9 @@ public class Client extends JFrame
         JScrollPane typeBoxScrollPane = new JScrollPane(typeBox, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         bottom.add(typeBoxScrollPane, BorderLayout.CENTER);
 
-        changeUsername.addActionListener(new ActionListener()
-        {
+        changeUsername.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 changeUsername();
             }
         });
@@ -123,16 +110,22 @@ public class Client extends JFrame
 
         this.connectionHandler = new ConnectionHandler(this, this.serverAddress, 2345);
 
-        try
-        {
+        try {
             this.connectionHandler.sendPacket(new LoginPacket(this.userName, this.id));
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             this.getLogger().log(Level.WARNING, "Could not change username");
             e.printStackTrace();
         }
 
+    }
+
+    public void stop() {
+        System.exit(0);
+    }
+
+    public void setSendable(boolean condition)
+    {
+        typeBox.setEditable(condition);
     }
 
     public static Logger getLogger()

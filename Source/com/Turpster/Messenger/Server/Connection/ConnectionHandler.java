@@ -7,6 +7,7 @@ import com.Turpster.Messenger.net.MessagePacket;
 import com.Turpster.Messenger.net.Packet;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -31,7 +32,15 @@ public class ConnectionHandler implements Runnable
         {
             serverSocket = new ServerSocket(port);
 
-        } catch (IOException e)
+        }
+        catch (BindException e)
+        {
+            Server.getLogger().log(Level.SEVERE, "COULD NOT BIND TO " + port + ", PRAHAPS SERVER IS ALREADY RUNNING?");
+            e.printStackTrace();
+            stop();
+            System.exit(0);
+        }
+        catch (IOException e)
         {
             Server.getLogger().log(Level.SEVERE, "Could not make server socket");
             e.printStackTrace();

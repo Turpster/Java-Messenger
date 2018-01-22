@@ -80,8 +80,8 @@ public class Connector implements Runnable
         }
         catch (SocketException e)
         {
-            Server.getLogger().log(Level.WARNING, "Looks like you have been disconnected.");
-            e.printStackTrace();
+            Server.getLogger().log(Level.WARNING, this.name + "/" + this.connection.getInetAddress().toString() + " has disconnected.");
+            stop();
         }
         catch (IOException e)
         {
@@ -101,6 +101,8 @@ public class Connector implements Runnable
 
     public synchronized void stop()
     {
+        this.connectionHandler.connections.remove(this);
+
         try
         {
             playerThread.join();

@@ -43,17 +43,16 @@ public class Messenger
         if (server)
         {
             serverObj = new Server();
-        }
-
-        if (!noClient)
-        {
-            if (server)
+            if (!noClient)
             {
                 targetIp = serverObj.getLocalAddress();
                 id = Server.serverOperatorId;
+                new Client(targetIp, null, id);
             }
         }
-
-        new Client(targetIp, null, id);
+        else
+        {
+            new Client(targetIp, null, id);
+        }
     }
 }
